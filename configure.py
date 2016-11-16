@@ -336,7 +336,23 @@ else:
         cflags += ['-D_GLIBCXX_DEBUG', '-D_GLIBCXX_DEBUG_PEDANTIC']
         cflags.remove('-fno-rtti')  # Needed for above pedanticness.
     else:
-        cflags += ['-O2', '-DNDEBUG']
+        cflags += ['-Ofast', '-ffast-math',
+                   '-ftree-vectorize', '-march=native',
+                   '-mtune=native', '-DNDEBUG',
+                   '-mllvm -polly', '-mllvm -polly-parallel',
+                   '-mllvm -polly-parallel-force',
+                   '-mllvm -polly-ast-use-context',
+                   '-mllvm -polly-vectorizer=polly',
+                   '-mllvm -polly-opt-fusion=max',
+                   '-mllvm -polly-opt-maximize-bands=yes',
+                   '-mllvm -polly-run-dce',
+                   '-mllvm -polly-dependences-computeout=0',
+                   '-mllvm -polly-dependences-analysis-type=value-based',
+                   '-mllvm -polly-position=after-loopopt',
+                   '-mllvm -polly-run-inliner',
+                   '-mllvm -polly-detect-keep-going',
+                   '-mllvm -polly-rtc-max-arrays-per-group=40',
+                   '-mllvm -polly-register-tiling']
     try:
         proc = subprocess.Popen(
             [CXX, '-fdiagnostics-color', '-c', '-x', 'c++', '/dev/null',
